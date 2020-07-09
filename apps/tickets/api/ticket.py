@@ -4,14 +4,15 @@
 from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 
+from orgs.mixins.api import OrgQuerySetMixin
 from common.permissions import IsValidUser
 from common.utils import lazyproperty
 from .. import serializers, models, mixins
 
 
-class TicketViewSet(mixins.TicketMixin, viewsets.ModelViewSet):
+class TicketViewSet(mixins.TicketMixin, OrgQuerySetMixin, viewsets.ModelViewSet):
     serializer_class = serializers.TicketSerializer
-    queryset = models.Ticket.objects.all()
+    model = models.Ticket
     permission_classes = (IsValidUser,)
     filter_fields = ['status', 'title', 'action', 'user_display']
     search_fields = ['user_display', 'title']

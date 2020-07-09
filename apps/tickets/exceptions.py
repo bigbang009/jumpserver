@@ -23,3 +23,7 @@ class TicketClosed(JMSException):
 
 class TicketActionYet(JMSException):
     pass
+
+
+class MustProvideOrgId(JMSException):
+    pass

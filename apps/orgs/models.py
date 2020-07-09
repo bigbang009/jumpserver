@@ -2,6 +2,7 @@ import uuid
 from django.conf import settings
 
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from common.utils import is_uuid, lazyproperty
@@ -146,6 +147,20 @@ class Organization(models.Model):
 
     def is_real(self):
         return self.id not in (self.DEFAULT_NAME, self.ROOT_ID, self.SYSTEM_ID)
+
+    @classmethod
+    def get_user_all_orgs(cls, user):
+        if user.is_anonymous:
+            return []
+        elif user.is_superuser:
+            qs = cls.objects.all()
+        else:
+            q = Q(users=user) | Q(admins=user) | Q(auditors=user)
+            qs = cls.objects.filter(q).distinct()
+
+        orgs = list(qs)
+        orgs.append(cls.default())
+        return orgs
 
     @classmethod
     def get_user_admin_orgs(cls, user):
